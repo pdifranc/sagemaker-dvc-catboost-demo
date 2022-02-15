@@ -3,8 +3,8 @@
     "KernelGatewayImageConfig": {
         "KernelSpecs": [
             {
-                "Name": "conda-env-myenv-py",
-                "DisplayName": "Python [conda env: myenv]"
+                "Name": "conda-env-dvc-py",
+                "DisplayName": "Python [conda env: dvc]"
             }
         ],
         "FileSystemConfig": {

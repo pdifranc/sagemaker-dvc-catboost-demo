@@ -1,4 +1,4 @@
-name: myenv
+name: dvc
 channels:
   - conda-forge
 dependencies:
