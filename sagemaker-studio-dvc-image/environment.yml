@@ -1,0 +1,11 @@
+name: myenv
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - awscli
+  - boto3
+  - dvc
+  - dvc-s3
+  - ipykernel
+
