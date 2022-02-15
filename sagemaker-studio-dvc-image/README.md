@@ -9,7 +9,7 @@ Further information about custom images for SageMaker Studio can be found [here]
 ### Prerequisite
 
 * An AWS account
-* an IAM user with enough permissions (`ECRFullAccess`, and `SageMakerFullAccess`)
+* an IAM user with enough permissions (`AmazonEC2ContainerRegistryFullAccess`, and `SageMakerFullAccess`)
 * a SageMaker Domain already created
 
 ### Overview
@@ -20,7 +20,16 @@ The Conda environment must have the appropriate kernel package installed, for e.
 
 ### Building the image
 
+## Resize Cloud9
+
+```bash
+cd ~/sagemaker-dvc-catboost-demo/sagemaker-studio-dvc-image
+./resize-cloud9.sh 20
+```
 Build the Docker image and push to Amazon ECR. 
+```bash
+sudo yum install jq -y
+```
 
 ```bash
 # Modify these as required. The Docker registry endpoint can be tuned based on your current region from https://docs.aws.amazon.com/general/latest/gr/ecr.html#ecr-docker-endpoints
@@ -43,8 +52,10 @@ Create a SageMaker Image (SMI) with the image in ECR.
 
 ```bash
 # Role in your account to be used for SMI. Modify as required.
+export ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/RoleName
+```
 
-ROLE_ARN=arn:aws:iam::${ACCOUNT_ID}:role/RoleName
+```bash
 aws --region ${REGION} sagemaker create-image \
     --image-name ${IMAGE_NAME} \
     --role-arn ${ROLE_ARN}
