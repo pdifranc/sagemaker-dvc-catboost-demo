@@ -26,20 +26,20 @@ The Conda environment must have the appropriate kernel package installed, for e.
 cd ~/sagemaker-dvc-catboost-demo/sagemaker-studio-dvc-image
 ./resize-cloud9.sh 20
 ```
-Build the Docker image and push to Amazon ECR. 
+Set the enviromental variables
+
 ```bash
 sudo yum install jq -y
-```
-
-```bash
-# Modify these as required. The Docker registry endpoint can be tuned based on your current region from https://docs.aws.amazon.com/general/latest/gr/ecr.html#ecr-docker-endpoints
-export REGION=$(aws configure list | grep region | awk '{print $2}') # if AWS_DEFAULT_REGION is set takes precedence over the aws config
+export REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
+echo "export REGION=${REGION}" | tee -a ~/.bash_profile
 export ACCOUNT_ID=$(aws sts get-caller-identity | jq -r '.Account')
+echo "export ACCOUNT_ID=${ACCOUNT_ID}" | tee -a ~/.bash_profile
+export IMAGE_NAME=conda-env-dvc-kernel
+echo "export IMAGE_NAME=${IMAGE_NAME}" | tee -a ~/.bash_profile
 ```
-
+Build the Docker image and push to Amazon ECR.
 ```bash
 # Build and push the image
-export IMAGE_NAME=conda-env-dvc-kernel
 aws --region ${REGION} ecr get-login-password | docker login --username AWS --password-stdin ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom
 
 docker build . -t ${IMAGE_NAME} -t ${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com/smstudio-custom:${IMAGE_NAME}
@@ -72,10 +72,17 @@ Create a AppImageConfig for this image
 
 ```bash
 aws --region ${REGION} sagemaker create-app-image-config --cli-input-json file://app-image-config-input.json
-
 ```
 
 Create a Domain, providing the SageMaker Image and AppImageConfig in the Domain input. Replace the placeholders for VPC ID, Subnet IDs, and Execution Role in `create-domain-input.json`
+
+Find the default vpc id, and its public subnets
+```bash
+aws ec2 describe-vpcs --filters Name=is-default,Values=true | jq -r '.Vpcs[].VpcId'
+```
+```bash
+aws ec2 describe-subnets --filters Name=vpc-id,Values=$(aws ec2 describe-vpcs --filters Name=is-default,Values=true | jq -r '.Vpcs[].VpcId') | jq -r '.Subnets[].SubnetId'
+```
 
 ```bash
 aws --region ${REGION} sagemaker create-domain --cli-input-json file://create-domain-input.json

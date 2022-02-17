@@ -1,16 +1,16 @@
 {
     "DomainName": "domain-with-custom-conda-env",
-    "VpcId": "<vpc-id>",
+    "VpcId": "<your-vpc-id>",
     "SubnetIds": [
-        "<subnet-ids>"
+        "<your-subnet-id>"
     ],
     "DefaultUserSettings": {
-        "ExecutionRole": "<role-arn>",
+        "ExecutionRole": "<your-sagemaker-execution-role>",
         "KernelGatewayAppSettings": {
             "CustomImages": [
                 {
-                    "ImageName": "conda-env-kernel",
-                    "AppImageConfigName": "conda-env-kernel-config"
+                    "ImageName": "conda-env-dvc-kernel",
+                    "AppImageConfigName": "conda-env-dvc-kernel-config"
                 }
             ]
         }
